@@ -113,9 +113,12 @@ case class Restricts(sym: XsTypeSymbol) extends DerivSym
 object XsAnySimpleType    extends BuiltInSimpleTypeSymbol("XsAnySimpleType") {}
 object XsUnknown          extends BuiltInSimpleTypeSymbol("String") {}
 object XsDuration         extends BuiltInSimpleTypeSymbol("javax.xml.datatype.Duration") {}
-object XsDateTime         extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
-object XsTime             extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
-object XsDate             extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
+object XsDateTime         extends BuiltInSimpleTypeSymbol("java.time.LocalDateTime") {}
+object XsTime             extends BuiltInSimpleTypeSymbol("java.time.LocalTime") {}
+object XsDate             extends BuiltInSimpleTypeSymbol("java.time.LocalDate") {}
+object GregorianDateTime  extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
+object GregorianTime      extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
+object GregorianDate      extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
 object XsGYearMonth       extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
 object XsGYear            extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
 object XsGMonthDay        extends BuiltInSimpleTypeSymbol("javax.xml.datatype.XMLGregorianCalendar") {}
@@ -161,13 +164,13 @@ object XsTypeSymbol {
   type =>?[A, B] = PartialFunction[A, B]
   val LOCAL_ELEMENT = "http://scalaxb.org/local-element"
   
-  val toTypeSymbol: String =>? XsTypeSymbol = {
+  def toTypeSymbol(useJavaTime: Boolean): String =>? XsTypeSymbol = {
     case "anyType"        => XsAnyType
     case "anySimpleType"  => XsAnySimpleType
     case "duration"       => XsDuration
-    case "dateTime"       => XsDateTime
-    case "time"           => XsTime
-    case "date"           => XsDate
+    case "dateTime"       => if (useJavaTime) XsDateTime else GregorianDateTime
+    case "time"           => if (useJavaTime) XsTime else GregorianTime
+    case "date"           => if (useJavaTime) XsDate else GregorianDate
     case "gYearMonth"     => XsGYearMonth
     case "gYear"          => XsGYear
     case "gMonthDay"      => XsGMonthDay
