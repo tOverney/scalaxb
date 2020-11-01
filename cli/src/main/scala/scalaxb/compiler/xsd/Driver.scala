@@ -28,14 +28,14 @@ import java.net.{URI}
 import collection.mutable
 import scala.xml.{Node, Elem}
 
-class Driver extends Module { driver =>
+class Driver(useJavaTime: Boolean = true) extends Module { driver =>
   private val logger = Log.forName("xsd")
 
   type Schema = SchemaDecl
   type Context = XsdContext
   type RawSchema = scala.xml.Node
   
-  override def buildContext = XsdContext()
+  override def buildContext = XsdContext(useJavaTime = useJavaTime)
   
   override def processSchema(schema: Schema, context: Context, cnfg: Config): Unit = {}
   

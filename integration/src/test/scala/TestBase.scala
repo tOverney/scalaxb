@@ -5,7 +5,7 @@ import scalaxb.compiler.xsd.{Driver}
 import org.specs2.matcher
 
 trait TestBase extends Specification with CompilerMatcher with matcher.FileMatchers {
-  val module: Module = new Driver // with Verbose
+  val module: Module = new Driver() // with Verbose
   val tmp = new File("tmp")
   def resource(name: String) = new File(s"integration/src/test/resources/$name")  
 

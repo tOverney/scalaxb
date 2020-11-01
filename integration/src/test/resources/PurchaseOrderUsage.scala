@@ -2,6 +2,8 @@
  * @author  e.e d3si9n
  */
 
+import java.time.{LocalDate, LocalDateTime, LocalTime}
+
 import scalaxb._
 import ipo._
 
@@ -74,8 +76,8 @@ object PurchaseOrderUsage {
         One,
         usPrice,
         None,
-        Some(XMLCalendar("2010-02-06Z")),
-        _) if x.partNum == "639-OS" =>
+        Some(ld),
+        _) if x.partNum == "639-OS" && ld == LocalDate.of(2010, 2, 6) =>
           if (usPrice != BigDecimal(4.00))
             sys.error("values don't match: " + item.toString)
       case _ => sys.error("match failed: " + item.toString)
@@ -139,7 +141,7 @@ object PurchaseOrderUsage {
         billTo: USAddress,
         None,
         Items(_),
-        _) if x.orderDate == Some(XMLCalendar("1999-12-01Z")) =>
+        _) if x.orderDate == Some(LocalDate.of(1999, 12, 1)) =>
       case _ => sys.error("match failed: " + purchaseOrder.toString)
     }    
     println(purchaseOrder.toString)  
@@ -150,7 +152,7 @@ object PurchaseOrderUsage {
     
     val timeOlson = fromXML[TimeOlson](subject)
     timeOlson match {
-      case x@TimeOlson(XMLCalendar("00:00:00"), _) if x.olsonTZ == "" =>
+      case x@TimeOlson(lt, _) if x.olsonTZ == "" && lt == LocalTime.of(0, 0, 0) =>
       case _ => sys.error("match failed: " + timeOlson.toString)
     }
     
@@ -315,16 +317,16 @@ object PurchaseOrderUsage {
   def testDatedData = {
     val subject = <foo xmlns="http://www.example.com/IPO"
         xmlns:ipo="http://www.example.com/IPO" id="foo">
-      <date>2010-02-06Z</date>
+      <date>2010-02-06T00:00:00Z</date>
       <hexBinary>0F</hexBinary>
       <base64Binary>QUJDREVGRw==</base64Binary>
     </foo>
     val obj = fromXML[DatedData](subject)
     obj match {
-      case x@DatedData(XMLCalendar("2010-02-06Z"),
+      case x@DatedData(ld,
         HexBinary(15),
         Base64Binary('A', 'B', 'C', 'D', 'E', 'F', 'G'),
-        _) if (x.id == Some("foo")) && (x.classValue == None) =>
+        _) if (x.id == Some("foo")) && (x.classValue == None) && ld == LocalDateTime.of(2010, 2, 6, 0, 0, 0) =>
       case _ => sys.error("match failed: " + obj.toString)
     }
     val document = toXML(obj, None, Some("foo"), subject.scope)

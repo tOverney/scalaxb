@@ -68,12 +68,12 @@ object Module {
   val NL = System.getProperty("line.separator")
   val FileExtension = """.*([.]\w+)$""".r
 
-  def moduleByFileName(file: File): Module = {
+  def moduleByFileName(file: File, config: Config): Module = {
     file.toString match {
       case FileExtension(".wsdl") =>
-        new scalaxb.compiler.wsdl11.Driver
+        new scalaxb.compiler.wsdl11.Driver(config.useJavaTime)
       case _ =>
-        new scalaxb.compiler.xsd.Driver
+        new scalaxb.compiler.xsd.Driver(config.useJavaTime)
     }
   }
 

@@ -6,7 +6,7 @@ import scalaxb.compiler.ConfigEntry._
 
 class GeneralTest extends TestBase {
   // Log.configureLogger(true)
-  override val module: Module = new Driver
+  override val module: Module = new Driver(useJavaTime = false)
   val inFile    = new File("integration/src/test/resources/general.xsd")
   val importFile = new File("integration/src/test/resources/general_import.xsd")
   val mimeFile  = new File("integration/src/test/resources/xmlmime.xsd")

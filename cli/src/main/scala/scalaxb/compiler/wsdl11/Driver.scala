@@ -35,18 +35,18 @@ import scalaxb.compiler.xsd.{GenProtocol, SchemaDecl, SchemaLite, XsdContext}
 
 import scala.util.matching.Regex
 
-class Driver extends Module { driver =>
+class Driver(useJavaTime: Boolean = true) extends Module { driver =>
   private val logger = Log.forName("wsdl")
   type Schema = WsdlPair
   type Context = WsdlContext
   type RawSchema = scala.xml.Node
   val WSDL_NS = Some("http://schemas.xmlsoap.org/wsdl/")
 
-  val xsddriver = new scalaxb.compiler.xsd.Driver {
+  val xsddriver = new scalaxb.compiler.xsd.Driver(useJavaTime) {
     override def verbose = driver.verbose
   }
 
-  def buildContext = WsdlContext()
+  def buildContext = WsdlContext(xsdcontext = xsddriver.buildContext)
 
   def readerToRawSchema(reader: Reader): RawSchema = CustomXML.load(reader)
 

@@ -727,8 +727,8 @@ trait {interfaceTypeName} {{
     }
 
   def toTypeSymbol(qname: javax.xml.namespace.QName): XsTypeSymbol = {
-    import scalaxb.compiler.xsd.{ReferenceTypeSymbol, TypeSymbolParser}
-    val symbol = TypeSymbolParser.fromQName(qname)
+    import scalaxb.compiler.xsd.{ParserConfig, ReferenceTypeSymbol}
+    val symbol = new ParserConfig(useJavaTime = config.useJavaTime).typeSymbolParser.fromQName(qname)
     symbol match {
       case symbol: ReferenceTypeSymbol =>
         val (namespace, typeName) = splitTypeName(qname)

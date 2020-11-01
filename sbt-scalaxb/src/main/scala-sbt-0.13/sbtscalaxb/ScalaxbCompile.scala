@@ -23,7 +23,7 @@ object ScalaxbCompile {
       sources.headOption map { src =>
         import sc._
         sc.Log.configureLogger(verbose)
-        val module = Module.moduleByFileName(src)
+        val module = Module.moduleByFileName(src, config)
         module.processFiles(sources.toVector, config.update(Outdir(outDir)))
       } getOrElse {Nil}
 

@@ -20,8 +20,9 @@ object ScalaxbCompile {
       sources.headOption map { src =>
         import sc._
         sc.Log.configureLogger(verbose)
-        val module = Module.moduleByFileName(src)
-        module.processFiles(sources.toVector, config.update(Outdir(outDir)))
+        val conf = config.update(Outdir(outDir))
+        val module = Module.moduleByFileName(src, conf)
+        module.processFiles(sources.toVector, conf)
       } getOrElse {Nil}
 
     def cachedCompile =

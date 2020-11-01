@@ -26,6 +26,9 @@ import scala.collection.{Map, Set}
 import scala.collection.mutable
 import scala.collection.immutable
 import java.net.URI
+
+import scalaxb.compiler.Module
+
 import scala.xml.NamespaceBinding
 
 abstract class Decl
@@ -51,10 +54,11 @@ case class XsdContext(
   groups: mutable.ListBuffer[(SchemaDecl, GroupDecl)] = mutable.ListBuffer(),
   substituteGroups: mutable.ListBuffer[(Option[String], String)] = mutable.ListBuffer(),
   prefixes: mutable.ListMap[String, String] = mutable.ListMap(),
-  duplicatedTypes: mutable.ListBuffer[(SchemaDecl, Decl)] = mutable.ListBuffer()
+  duplicatedTypes: mutable.ListBuffer[(SchemaDecl, Decl)] = mutable.ListBuffer(),
+  useJavaTime: Boolean = true
 )
 
-class ParserConfig {
+class ParserConfig(useJavaTime: Boolean) {
   var scope: scala.xml.NamespaceBinding = _
   var targetNamespace: Option[String] = None
   var elementQualifiedDefault: Boolean = false
@@ -69,13 +73,13 @@ class ParserConfig {
   val topAttrGroups = mutable.ListMap.empty[String, AttributeGroupDecl]
   val choices   = mutable.ListBuffer.empty[ChoiceDecl]
   val typeToAnnotatable = mutable.ListMap.empty[TypeDecl, Annotatable]
+  var typeSymbolParser: TypeSymbolParser = new TypeSymbolParser(useJavaTime)
 }
 
-object TypeSymbolParser {
-  import scalaxb.compiler.Module
+class TypeSymbolParser(useJavaTime: Boolean) {
+  import TypeSymbolParser._
 
-  val XML_SCHEMA_URI = "http://www.w3.org/2001/XMLSchema"
-  val XML_URI = "http://www.w3.org/XML/1998/namespace"
+  val typeSymbolMapper = XsTypeSymbol.toTypeSymbol(useJavaTime)
   
   def fromString(name: String, scope: NamespaceBinding, config: ParserConfig): XsTypeSymbol =
     fromString(splitTypeName(name, scope, config.targetNamespace))
@@ -87,11 +91,17 @@ object TypeSymbolParser {
     val (namespace, localPart) = pair
     namespace match {
       case Some(XML_SCHEMA_URI) =>
-        if (XsTypeSymbol.toTypeSymbol.isDefinedAt(localPart)) XsTypeSymbol.toTypeSymbol(localPart)
-        else ReferenceTypeSymbol(namespace, localPart)
+        typeSymbolMapper.lift(localPart).getOrElse(ReferenceTypeSymbol(namespace, localPart))
       case _ => ReferenceTypeSymbol(namespace, localPart)
     }
   }
+}
+
+object TypeSymbolParser {
+  import scalaxb.compiler.Module
+
+  val XML_SCHEMA_URI = "http://www.w3.org/2001/XMLSchema"
+  val XML_URI = "http://www.w3.org/XML/1998/namespace"
 
   def splitTypeName(name: String, scope: NamespaceBinding, targetNamespace: Option[String]): (Option[String], String) =
     if (name.contains('@')) (targetNamespace, name)
@@ -146,9 +156,8 @@ case class SchemaDecl(targetNamespace: Option[String],
 }
 
 object SchemaDecl {
-  def fromXML(node: scala.xml.Node,
-      context: XsdContext,
-      config: ParserConfig = new ParserConfig) = {
+  def fromXML(node: scala.xml.Node, context: XsdContext) = {
+    val config: ParserConfig = new ParserConfig(context.useJavaTime)
     val schema = (node \\ "schema").headOption.getOrElse {
       sys.error("xsd: schema element not found: " + node.toString) }
     val targetNamespace = schema.attribute("targetNamespace").headOption map { _.text }
@@ -314,7 +323,7 @@ object AttributeDecl {
     val typeName = (node \ "@type").text
     
     if (typeName != "") {
-      typeSymbol = TypeSymbolParser.fromString(typeName, node.scope, config)
+      typeSymbol = config.typeSymbolParser.fromString(typeName, node.scope, config)
     } else {
       for (child <- node.child) child match {
         case <simpleType>{ _* }</simpleType> =>
@@ -416,7 +425,7 @@ object ElemDecl {
     var typeSymbol: XsTypeSymbol = XsAnyType
 
     (node \ "@type").headOption map { typeName =>
-      typeSymbol = TypeSymbolParser.fromString(typeName.text, node.scope, config)
+      typeSymbol = config.typeSymbolParser.fromString(typeName.text, node.scope, config)
     } getOrElse {
       for (child <- node.child) child match {
         case <complexType>{ _* }</complexType> =>

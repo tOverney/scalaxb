@@ -2,8 +2,9 @@
  * @author  e.e d3si9n
  */
 
+import java.time.LocalTime
+
 import scalaxb._
-import ipo._
 
 object PurchaseOrderIgnoreUnknownUsage {
   def main(args: Array[String]): Unit = {
@@ -77,7 +78,7 @@ object PurchaseOrderIgnoreUnknownUsage {
         One,
         usPrice,
         None,
-        Some(XMLCalendar("2010-02-06Z")),
+        Some(LocalDate.of(2010, 2, 6)),
         _) if x.partNum == "639-OS" =>
           if (usPrice != BigDecimal(4.00))
             sys.error("values don't match: " + item.toString)
@@ -144,7 +145,7 @@ object PurchaseOrderIgnoreUnknownUsage {
         billTo: USAddress,
         None,
         Items(_),
-        _) if x.orderDate == Some(XMLCalendar("1999-12-01Z")) =>
+        _) if x.orderDate == Some(LocalDate.of(1999, 12, 1)) =>
       case _ => sys.error("match failed: " + purchaseOrder.toString)
     }    
     println(purchaseOrder.toString)  
@@ -155,7 +156,7 @@ object PurchaseOrderIgnoreUnknownUsage {
     
     val timeOlson = fromXML[TimeOlson](subject)
     timeOlson match {
-      case x@TimeOlson(XMLCalendar("00:00:00"), _) if x.olsonTZ == "" =>
+      case x@TimeOlson(LocalTime.of(0, 0, 0), _) if x.olsonTZ == "" =>
       case _ => sys.error("match failed: " + timeOlson.toString)
     }
     
@@ -324,7 +325,7 @@ object PurchaseOrderIgnoreUnknownUsage {
         xmlns:ipo="http://www.example.com/IPO" id="foo">
       <base64Binary>QUJDREVGRw==</base64Binary>
       <hexBinary>0F</hexBinary>
-      <date>2010-02-06Z</date>
+      <date>2010-02-06T00:00:00Z</date>
     </foo>
     val obj = fromXML[DatedData](subject)
     obj match {

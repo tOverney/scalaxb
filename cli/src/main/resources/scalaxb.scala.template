@@ -1,5 +1,8 @@
 package scalaxb
 
+import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.format.DateTimeFormatter.{ISO_DATE, ISO_DATE_TIME, ISO_TIME}
+
 import scala.xml.{Node, NodeSeq, NamespaceBinding, Elem, UnprefixedAttribute, PrefixedAttribute}
 import javax.xml.datatype.{XMLGregorianCalendar}
 import javax.xml.namespace.QName
@@ -199,6 +202,33 @@ trait XMLStandardTypes {
         scope: scala.xml.NamespaceBinding, typeAttribute: Boolean): scala.xml.NodeSeq =
       Helper.stringToXML(obj.toString, namespace, elementLabel, scope)
   }
+
+  implicit lazy val __LocalDateXMLFormat: XMLFormat[LocalDate] = new XMLFormat[LocalDate] {
+    def reads(seq: scala.xml.NodeSeq, stack: List[ElemName]): Either[String, LocalDate] = try {
+      Right(LocalDate.parse(seq.text, ISO_DATE)) } catch { case e: Exception => Left(e.toString) }
+
+    def writes(obj: LocalDate, namespace: Option[String], elementLabel: Option[String],
+               scope: scala.xml.NamespaceBinding, typeAttribute: Boolean): scala.xml.NodeSeq =
+      Helper.stringToXML(obj.format(ISO_DATE), namespace, elementLabel, scope)
+  }
+
+  implicit lazy val __LocalTimeXMLFormat: XMLFormat[LocalTime] = new XMLFormat[LocalTime] {
+    def reads(seq: scala.xml.NodeSeq, stack: List[ElemName]): Either[String, LocalTime] = try {
+      Right(LocalTime.parse(seq.text, ISO_TIME)) } catch { case e: Exception => Left(e.toString) }
+
+    def writes(obj: LocalTime, namespace: Option[String], elementLabel: Option[String],
+               scope: scala.xml.NamespaceBinding, typeAttribute: Boolean): scala.xml.NodeSeq =
+      Helper.stringToXML(obj.format(ISO_TIME), namespace, elementLabel, scope)
+  }
+
+  implicit lazy val __LocalDateTimeXMLFormat: XMLFormat[LocalDateTime] = new XMLFormat[LocalDateTime] {
+      def reads(seq: scala.xml.NodeSeq, stack: List[ElemName]): Either[String, LocalDateTime] = try {
+        Right(LocalDateTime.parse(seq.text, ISO_DATE_TIME)) } catch { case e: Exception => Left(e.toString) }
+
+      def writes(obj: LocalDateTime, namespace: Option[String], elementLabel: Option[String],
+                 scope: scala.xml.NamespaceBinding, typeAttribute: Boolean): scala.xml.NodeSeq =
+        Helper.stringToXML(obj.format(ISO_DATE_TIME), namespace, elementLabel, scope)
+    }
 
   implicit lazy val __CalendarXMLFormat: XMLFormat[XMLGregorianCalendar] = new XMLFormat[XMLGregorianCalendar] {
     def reads(seq: scala.xml.NodeSeq, stack: List[ElemName]): Either[String, XMLGregorianCalendar] = try {
