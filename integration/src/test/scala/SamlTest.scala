@@ -9,7 +9,7 @@ class SamlTest extends TestBase {
   val samlschemametadata2xsd = new File("integration/src/test/resources/saml-schema-metadata-2.0.xsd")
   val usageFile = new File(tmp, "SamlUsage.scala")
   copyFileFromResource("SamlUsage.scala", usageFile)
-  val config = Config.default.update(PackageNames(Map(None -> Some("saml"),
+  override val config = Config.default.update(PackageNames(Map(None -> Some("saml"),
       Some("http://www.w3.org/2000/09/xmldsig#") -> Some("org.w3.xmldsig"),
       Some("http://www.w3.org/2001/04/xmlenc#") -> Some("org.w3.xmlenc"),
       Some("urn:oasis:names:tc:SAML:2.0:assertion") -> Some("org.xml.saml2.assertion"),

@@ -2,9 +2,10 @@
  * @author  e.e d3si9n
  */
 
-import java.time.LocalTime
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 import scalaxb._
+import ipo._
 
 object PurchaseOrderIgnoreUnknownUsage {
   def main(args: Array[String]): Unit = {
@@ -78,8 +79,8 @@ object PurchaseOrderIgnoreUnknownUsage {
         One,
         usPrice,
         None,
-        Some(LocalDate.of(2010, 2, 6)),
-        _) if x.partNum == "639-OS" =>
+        Some(ld),
+        _) if x.partNum == "639-OS" && ld == LocalDate.of(2010, 2, 6) =>
           if (usPrice != BigDecimal(4.00))
             sys.error("values don't match: " + item.toString)
       case _ => sys.error("match failed: " + item.toString)
@@ -156,7 +157,7 @@ object PurchaseOrderIgnoreUnknownUsage {
     
     val timeOlson = fromXML[TimeOlson](subject)
     timeOlson match {
-      case x@TimeOlson(LocalTime.of(0, 0, 0), _) if x.olsonTZ == "" =>
+      case x@TimeOlson(lt, _) if x.olsonTZ == "" && lt == LocalTime.of(0, 0, 0) =>
       case _ => sys.error("match failed: " + timeOlson.toString)
     }
     
@@ -329,10 +330,10 @@ object PurchaseOrderIgnoreUnknownUsage {
     </foo>
     val obj = fromXML[DatedData](subject)
     obj match {
-      case x@DatedData(XMLCalendar("2010-02-06Z"),
+      case x@DatedData(ld,
         HexBinary(15),
         Base64Binary('A', 'B', 'C', 'D', 'E', 'F', 'G'),
-        _) if (x.id == Some("foo")) && (x.classValue == None) =>
+        _) if (x.id == Some("foo")) && (x.classValue == None) && ld == LocalDateTime.of(2010, 2, 6, 0, 0, 0) =>
       case _ => sys.error("match failed: " + obj.toString)
     }
     val document = toXML(obj, None, Some("foo"), subject.scope)

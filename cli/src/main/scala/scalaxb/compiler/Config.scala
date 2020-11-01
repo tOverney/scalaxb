@@ -116,7 +116,7 @@ object Config {
       defaultWrappedComplexTypes, SeperateProtocol, defaultProtocolFileName,
       defaultProtocolPackageName, GenerateRuntime, GenerateDispatchClient,
       defaultContentsSizeLimit, defaultSequenceChunkSize,
-      GenerateAsync, defaultDispatchVersion)
+      GenerateAsync, defaultDispatchVersion, UseJavaTime)
   )
 }
 

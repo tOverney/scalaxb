@@ -8,8 +8,7 @@ object LensPurchaseOrderTest extends TestBase {
   val usageFile = new File(tmp, "PurchaseOrderUsage.scala")
   copyFileFromResource("PurchaseOrderUsage.scala", usageFile)
 
-  // override val module = new scalaxb.compiler.xsd.Driver with Verbose
-  val config = Config.default
+  override val config = Config.default
     .update(PackageNames(Map(None -> Some("ipo"))))
     .update(Outdir(tmp))
     .update(UseLists)

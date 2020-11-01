@@ -4,7 +4,7 @@ import scalaxb.compiler.ConfigEntry._
 
 class NullNamespaceTest extends TestBase {
   val inFile  = new File("integration/src/test/resources/nullnamespace.xsd")
-  val config = Config.default.update(PackageNames(Map[Option[String], Option[String]]())).
+  override val config = Config.default.update(PackageNames(Map[Option[String], Option[String]]())).
       update(Outdir(tmp))
   lazy val generated = module.process(inFile, config)
 

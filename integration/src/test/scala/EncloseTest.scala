@@ -2,7 +2,7 @@ import scalaxb.compiler.{Config}
 import scalaxb.compiler.ConfigEntry._
 
 class EncloseTest extends TestBase {
-  val config = Config.default.update(PackageNames(Map(None -> Some("enclose")))).
+  override val config = Config.default.update(PackageNames(Map(None -> Some("enclose")))).
     update(Outdir(tmp)).
     update(GeneratePackageDir).
     update(PrependFamilyName)

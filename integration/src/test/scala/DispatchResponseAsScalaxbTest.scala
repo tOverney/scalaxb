@@ -2,10 +2,8 @@ import java.io.File
 
 import scalaxb.compiler.Config
 import scalaxb.compiler.ConfigEntry._
-import scalaxb.compiler.xsd.Driver
 
 class DispatchResponseAsScalaxbTest extends TestBase with JaxrsTestBase {
-  override val module = new Driver() // with Verbose
 
   def serviceImpl:RestService = new RestService()
   def serviceAddress: String = "dispatch-response-as-scalaxb"
@@ -16,7 +14,7 @@ class DispatchResponseAsScalaxbTest extends TestBase with JaxrsTestBase {
 
   val packageName = "stockquote"
   val xsdFile = new File(s"integration/src/test/resources/item.xsd")
-  val config = Config.default.update(PackageNames(Map(None -> Some(packageName)))).
+  override val config = Config.default.update(PackageNames(Map(None -> Some(packageName)))).
       update(Outdir(tmp)).
       update(GeneratePackageDir).
       update(GenerateDispatchAs)

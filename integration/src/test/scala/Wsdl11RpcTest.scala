@@ -1,11 +1,9 @@
-import scalaxb.compiler.wsdl11.Driver
 import java.io.File
 import scalaxb.compiler.Config
 import scalaxb.compiler.ConfigEntry._
 import scalaxb.stockquote.server._
 
-class Wsdl11RpcTest extends TestBase with JaxwsTestBase {
-  override val module = new Driver() // with Verbose
+class Wsdl11RpcTest extends Wsdl11TestBase with JaxwsTestBase {
 
   def serviceImpl:RpcLiteralService = new RpcLiteralService()
   def serviceAddress: String = "rpc-literal"
@@ -16,9 +14,6 @@ class Wsdl11RpcTest extends TestBase with JaxwsTestBase {
 
   val packageName = "stockquote"
   val wsdlFile = new File(s"integration/target/$serviceAddress.wsdl")
-  val config =  Config.default.update(PackageNames(Map(None -> Some(packageName)))).
-      update(Outdir(tmp)).
-      update(GeneratePackageDir)
   lazy val generated = {
     writeStringToFile(retrieveWsdl, wsdlFile)
     module.process(wsdlFile, config)

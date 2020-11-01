@@ -2,7 +2,7 @@ import scalaxb.compiler.Config
 import scalaxb.compiler.ConfigEntry._
 
 class DuplicateEnumerationTest extends TestBase {
-  val config = Config.default.update(PackageNames(Map(None -> Some("dupenum")))).
+  override val config = Config.default.update(PackageNames(Map(None -> Some("dupenum")))).
     update(Outdir(tmp)).
     update(GeneratePackageDir).
     update(PrependFamilyName)

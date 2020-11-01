@@ -10,7 +10,7 @@ class ImportTest extends TestBase {
   val conflictxsd = new File("integration/src/test/resources/conflict.xsd")
   val includexsd = new File("integration/src/test/resources/include.xsd")
 
-  val config = Config.default.update(PackageNames(
+  override val config = Config.default.update(PackageNames(
       Map(None -> Some("ipo"),
         Some("http://www.example.com/Report") -> Some("org.report")))).
     update(Outdir(tmp)).
